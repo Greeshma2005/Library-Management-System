@@ -58,20 +58,24 @@ Password: admin@1234
 
 ## 📸 Screenshot
 Here is a screenshot of the Admin Login page:
-![Admin Login Page Screenshot](Images/Admin Login Page.png)
+
+![Admin Login Page Screenshot](Images/Admin%20Login%20Page.png)
 
 Here is a screenshot of the Admin Dashboard page:
-![Admin Dashboard Page Screenshot](Images/Admin Dashboard Page.png)
+
+![Admin Dashboard Page Screenshot](Images/Admin%20Dashboard%20Page.png)
 
 Here is a screenshot of the User Registration page:
-![User Registration Page Screenshot](Images/User Registration Page.png)
+
+![User Registration Page Screenshot](Images/User%20Registration%20Page.png)
 
 Here is a screenshot of the User Login page:
-![User Login Page Screenshot](Images/User Login Page.png)
+
+![User Login Page Screenshot](Images/User%20Login%20Page.png)
 
 Here is a screenshot of the User Dashboard page:
-![User Dashboard Page Screenshot](Images/User Dashboard Page.png)
 
+![User Dashboard Page Screenshot](Images/User%20Dashboard%20Page.png)
 ## 📢 Contributing
 Feel free to fork this repository, make improvements, and submit pull requests.
 
