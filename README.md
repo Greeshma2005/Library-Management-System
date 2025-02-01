@@ -52,7 +52,9 @@ A **Library Management System** built with **PHP** and **MySQL**, designed to he
 
 ## ⚙ Default Admin Credentials (if applicable)
 Username: admin
+
 E-mail: admin@gmail.com
+
 Password: admin@1234
 
 
