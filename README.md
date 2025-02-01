@@ -56,6 +56,22 @@ E-mail: admin@gmail.com
 Password: admin@1234
 
 
+## 📸 Screenshot
+Here is a screenshot of the Admin Login page:
+![Admin Login Page Screenshot](Admin Login Page.png)
+
+Here is a screenshot of the Admin Dashboard page:
+![Admin Dashboard Page Screenshot](Admin Dashboard Page.png)
+
+Here is a screenshot of the User Registration page:
+![User Registration Page Screenshot](User Registration Page.png)
+
+Here is a screenshot of the User Login page:
+![User Login Page Screenshot](User Login Page.png)
+
+Here is a screenshot of the User Dashboard page:
+![User Dashboard Page Screenshot](User Dashboard Page.png)
+
 ## 📢 Contributing
 Feel free to fork this repository, make improvements, and submit pull requests.
 
