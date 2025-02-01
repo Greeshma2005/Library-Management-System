@@ -1,96 +1,123 @@
 <?php
 	session_start();
-	#fetch data from database
-	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
+	$connection = mysqli_connect("localhost", "root", "", "lms");
 	$book_name = "";
 	$book_no = "";
-	$author_id = "";
-	$cat_id = "";
+	$author_name = "";
+	$cat_name = "";
 	$book_price = "";
-	$query = "select * from books where book_no = $_GET[bn]";
-	$query_run = mysqli_query($connection,$query);
-	while ($row = mysqli_fetch_assoc($query_run)){
+	$query = "SELECT * FROM books WHERE book_no = '".$_GET['bn']."'";
+	$query_run = mysqli_query($connection, $query);
+	while ($row = mysqli_fetch_assoc($query_run)) {
 		$book_name = $row['book_name'];
 		$book_no = $row['book_no'];
-		$author_id = $row['author_id'];
-		$cat_id = $row['cat_id'];
+		$author_name = $row['author_name'];
+		$cat_name = $row['cat_name'];
 		$book_price = $row['book_price'];
 	}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard</title>
-	<meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
-	<link rel="stylesheet" type="text/css" href="../bootstrap-4.4.1/css/bootstrap.min.css">
-  	<script type="text/javascript" src="../bootstrap-4.4.1/js/juqery_latest.js"></script>
-  	<script type="text/javascript" src="../bootstrap-4.4.1/js/bootstrap.min.js"></script>
+	<title>Edit Books</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .form-container {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="admin_dashboard.php">Library Management System (LMS)</a>
-			</div>
-			<font style="color: white"><span><strong>Welcome: <?php echo $_SESSION['name'];?></strong></span></font>
-			<font style="color: white"><span><strong>Email: <?php echo $_SESSION['email'];?></strong></font>
-		    <ul class="nav navbar-nav navbar-right">
-		      <li class="nav-item dropdown">
-	        	<a class="nav-link dropdown-toggle" data-toggle="dropdown">My Profile </a>
-	        	<div class="dropdown-menu">
-	        		<a class="dropdown-item" href="">View Profile</a>
-	        		<div class="dropdown-divider"></div>
-	        		<a class="dropdown-item" href="#">Edit Profile</a>
-	        		<div class="dropdown-divider"></div>
-	        		<a class="dropdown-item" href="change_password.php">Change Password</a>
-	        	</div>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link" href="../logout.php">Logout</a>
-		      </li>
-		    </ul>
-		</div>
-	</nav><br>
-	<span><marquee>This is library mangement system. Library opens at 8:00 AM and close at 8:00 PM</marquee></span><br><br>
-		<center><h4>Edit Book</h4><br></center>
-		<div class="row">
-			<div class="col-md-4"></div>
-			<div class="col-md-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="admin_dashboard.php">Library Management System</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin_dashboard.php">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link text-white"><strong>Welcome: <?php echo $_SESSION['name']; ?></strong></span>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link text-white"><strong>Email: <?php echo $_SESSION['email']; ?></strong></span>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Profile</a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="view_profile.php">View Profile</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="change_password.php">Change Password</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../logout.php">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav><br>
+	<span class="marquee"><marquee>Library opens at 8:00 AM and closes at 8:00 PM</marquee></span>
+	<div class="container form-container">
+		<center><h4>Edit Book</h4></center>
+		<div class="row justify-content-center">
+			<div class="col-md-6">
 				<form action="" method="post">
 					<div class="form-group">
-						<label for="mobile">Book Number:</label>
-						<input type="text" name="book_no" value="<?php echo $book_no;?>" class="form-control" disabled required>
+						<label for="book_no">ISBN Number:</label>
+						<input type="text" name="book_no" value="<?php echo $book_no; ?>" class="form-control" required>
 					</div>
 					<div class="form-group">
-						<label for="email">Book Name:</label>
-						<input type="text" name="book_name" value="<?php echo $book_name;?>" class="form-control" required>
+						<label for="book_name">Book Name:</label>
+						<input type="text" name="book_name" value="<?php echo $book_name; ?>" class="form-control" required>
 					</div>
 					<div class="form-group">
-						<label for="mobile">Author ID:</label>
-						<input type="text" name="author_id" value="<?php echo $author_id;?>" class="form-control" required>
+						<label for="author_id">Author Name:</label>
+						<input type="text" name="author_name" value="<?php echo $author_name; ?>" class="form-control" required>
 					</div>
 					<div class="form-group">
-						<label for="mobile">Category ID:</label>
-						<input type="text" name="cat_id" value="<?php echo $cat_id;?>" class="form-control" required>
+						<label for="cat_id">Branch Name:</label>
+						<input type="text" name="cat_name" value="<?php echo $cat_name; ?>" class="form-control" required>
 					</div>
 					<div class="form-group">
-						<label for="mobile">Book Price:</label>
-						<input type="text" name="book_price" value="<?php echo $book_price;?>" class="form-control" required>
+						<label for="book_price">Book Price:</label>
+						<input type="text" name="book_price" value="<?php echo $book_price; ?>" class="form-control" required>
 					</div>
 					<button type="submit" name="update" class="btn btn-primary">Update Book</button>
 				</form>
 			</div>
-			<div class="col-md-4"></div>
 		</div>
+	</div>
 </body>
 </html>
 <?php
 	if(isset($_POST['update'])){
-		$connection = mysqli_connect("localhost","root","");
-		$db = mysqli_select_db($connection,"lms");
-		$query = "update books set book_name = '$_POST[book_name]',author_id = $_POST[author_id],cat_id = $_POST[cat_id],book_price = $_POST[book_price] where book_no = $_GET[bn]";
-		$query_run = mysqli_query($connection,$query);
-		header("location:manage_book.php");
+		$original_book_no = $_GET['bn']; 
+		$new_book_no = $_POST['book_no']; 
+		
+		$query = "UPDATE books SET 
+			book_no = '$new_book_no', 
+			book_name = '".$_POST['book_name']."', 
+			author_name = '".$_POST['author_name']."', 
+			cat_name = '".$_POST['cat_name']."', 
+			book_price = '".$_POST['book_price']."' 
+		WHERE book_no = '$original_book_no'";
+		
+		$query_run = mysqli_query($connection, $query);
+		
+		if ($query_run) {
+			echo "<script>alert('Book updated successfully!'); window.location.href='manage_book.php';</script>";
+		} else {
+			echo "<script>alert('Error updating book. Please try again.');</script>";
+		}
 	}
 ?>

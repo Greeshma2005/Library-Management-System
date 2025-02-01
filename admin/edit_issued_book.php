@@ -1,28 +1,74 @@
 <?php
-require("functions.php");
 session_start();
-$connection = mysqli_connect("localhost", "root", "");
-$db = mysqli_select_db($connection, "lms");
-$name = $email = $mobile = "";
-$query = "SELECT * FROM admins WHERE email = '$_SESSION[email]'";
-$query_run = mysqli_query($connection, $query);
-while ($row = mysqli_fetch_assoc($query_run)) {
-    $name = $row['name'];
-    $email = $row['email'];
-    $mobile = $row['mobile'];
+$connection = mysqli_connect("localhost", "root", "", "lms");
+if (!$connection) {
+    die("Database connection failed: " . mysqli_connect_error());
 }
-$search_term = isset($_POST['search']) ? mysqli_real_escape_string($connection, $_POST['search']) : '';
-$query = "SELECT * FROM category";
-if (!empty($search_term)) {
-    $query .= " WHERE cat_name LIKE '%$search_term%'";
+$original_book_no = '';
+$student_id = '';
+$student_name = '';
+$book_name = '';
+$book_author = '';
+$issue_date = '';
+if (isset($_GET['bn'])) {
+    $book_no = mysqli_real_escape_string($connection, $_GET['bn']);
+    $query = "SELECT * FROM issued_books WHERE book_no = '$book_no'";
+    $result = mysqli_query($connection, $query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $original_book_no = $row['book_no'];
+        $student_id = $row['student_id'];
+        $student_name = $row['student_name'];
+        $book_name = $row['book_name'];
+        $book_author = $row['book_author'];
+        $issue_date = $row['issue_date'];
+    } else {
+        echo "Book not found.";
+        exit;
+    }
 }
-$query_run = mysqli_query($connection, $query);
-$branchesAvailable = mysqli_num_rows($query_run) > 0;
+if (isset($_POST['update_book'])) {
+    $student_id = mysqli_real_escape_string($connection, $_POST['student_id']);
+    $student_name = mysqli_real_escape_string($connection, $_POST['student_name']);
+    $new_book_no = mysqli_real_escape_string($connection, $_POST['book_no']);
+    $book_name = mysqli_real_escape_string($connection, $_POST['book_name']);
+    $book_author = mysqli_real_escape_string($connection, $_POST['book_author']);
+    $issue_date = mysqli_real_escape_string($connection, $_POST['issue_date']);
+    $query = "UPDATE issued_books SET 
+              student_id='$student_id', 
+              student_name='$student_name', 
+              book_name='$book_name', 
+              book_author='$book_author', 
+              issue_date='$issue_date', 
+              book_no='$new_book_no' 
+              WHERE book_no='$original_book_no'";
+
+    if (mysqli_query($connection, $query)) {
+        echo "<script>alert('Book details updated successfully.'); window.location.href = 'view_issued_book.php';</script>";
+    } else {
+        echo "Error updating record: " . mysqli_error($connection);
+    }
+}
+if (isset($_GET['bn'])) {
+    $book_no = mysqli_real_escape_string($connection, $_GET['bn']);
+    $query = "SELECT * FROM issued_books WHERE book_no = '$book_no'";
+    $result = mysqli_query($connection, $query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $original_book_no = $row['book_no'];
+        $student_id = $row['student_id'];
+        $student_name = $row['student_name'];
+        $book_name = $row['book_name'];
+        $book_author = $row['book_author'];
+        $issue_date = $row['issue_date'];
+    } else {
+        echo "Book not found.";
+        exit;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Manage Branch</title>
+    <title>Edit Issued Book</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -31,20 +77,6 @@ $branchesAvailable = mysqli_num_rows($query_run) > 0;
         .navbar .dropdown-menu {
             left: auto;
             right: 0;
-        }
-        .btn-no-underline {
-            text-decoration: none;
-        }
-        .btn-no-underline:hover {
-            text-decoration: none;
-        }
-        .btn-gap {
-            margin-right: 5px;
-        }
-        .no-branches-msg {
-            color: #dc3545;
-            font-size: 1.25rem;
-            text-align: center;
         }
     </style>
 </head>
@@ -58,7 +90,7 @@ $branchesAvailable = mysqli_num_rows($query_run) > 0;
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="admin_dashboard.php">Dashboard</a>
+                        <a class="nav-link" href="admin_dashboard.php">Dashboard</a>
                 </li>
                 <li class="nav-item">
                     <span class="nav-link text-white"><strong>Welcome: <?php echo $_SESSION['name']; ?></strong></span>
@@ -82,7 +114,7 @@ $branchesAvailable = mysqli_num_rows($query_run) > 0;
             </ul>
         </div>
     </div>
-</nav> 
+</nav>
 <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav2" aria-controls="navbarNav2" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,56 +155,45 @@ $branchesAvailable = mysqli_num_rows($query_run) > 0;
             </ul>
         </div>
     </div>
-</nav>
-<br>
-<span><marquee>Library opens at 8:00 AM and closes at 8:00 PM</marquee></span>
-<br><br>
+</nav><br>
+<span><marquee>Library opens at 8:00 AM and closes at 8:00 PM</marquee></span><br><br>
 <div class="container">
-    <?php if ($branchesAvailable) { ?>
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <h4 class="text-center">Manage Branch</h4><br>
-                <form method="post" class="mb-4">
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="search" placeholder="Search Branch" value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary mr-2" type="submit">Search</button>
-                            <?php if (isset($_POST['search']) && !empty($_POST['search'])): ?>
-                                <a href="manage_cat.php" class="btn btn-secondary btn-gap">Cancel</a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </form>
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <?php while ($row = mysqli_fetch_assoc($query_run)) { ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($row['cat_name']); ?></td>
-                            <td>
-                                <a href="edit_cat.php?cid=<?php echo htmlspecialchars($row['cat_id']); ?>" class="btn btn-primary btn-gap btn-no-underline">Edit</a>
-                                <a href="delete_cat.php?cid=<?php echo htmlspecialchars($row['cat_id']); ?>" class="btn btn-danger btn-no-underline">Delete</a>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                </table>
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <center><h4>Edit Issued Book</h4></center><br>
         </div>
-    <?php } else { ?>
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <p class="no-branches-msg">No Branch Is Available</p>
-            </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <form action="" method="post">
+                <div class="form-group">
+                    <label for="student_id">Student ID:</label>
+                    <input type="text" name="student_id" class="form-control" value="<?php echo htmlspecialchars($student_id); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="student_name">Student Name:</label>
+                    <input type="text" name="student_name" class="form-control" value="<?php echo htmlspecialchars($student_name); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="book_name">Book Name:</label>
+                    <input type="text" name="book_name" class="form-control" value="<?php echo htmlspecialchars($book_name); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="book_author">Author Name:</label>
+                    <input type="text" name="book_author" class="form-control" value="<?php echo htmlspecialchars($book_author); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="book_no">ISBN Number:</label>
+                    <input type="text" name="book_no" class="form-control" value="<?php echo htmlspecialchars($book_no); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="issue_date">Issue Date:</label>
+                    <input type="text" name="issue_date" class="form-control" value="<?php echo htmlspecialchars($issue_date); ?>" required>
+                </div>
+                <button type="submit" name="update_book" class="btn btn-primary">Update Book</button>
+            </form>
         </div>
-    <?php } ?>
+    </div>
 </div>
 </body>
 </html>
-
-<?php
-mysqli_close($connection);
-?>
